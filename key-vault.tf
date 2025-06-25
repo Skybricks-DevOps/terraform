@@ -48,7 +48,7 @@ resource "azurerm_key_vault_access_policy" "aks" {
 # Secret: Mot de passe PostgreSQL
 resource "azurerm_key_vault_secret" "postgresql_password" {
   name         = "postgresql-admin-password"
-  value        = local.postgresql_password
+  value        = nonsensitive(local.postgresql_password)
   key_vault_id = azurerm_key_vault.main.id
   
   depends_on = [azurerm_key_vault_access_policy.current_user]
@@ -68,7 +68,7 @@ resource "azurerm_key_vault_secret" "postgresql_connection_string" {
 # Secret: Token GitHub pour Container Registry
 resource "azurerm_key_vault_secret" "github_token" {
   name         = "github-container-registry-token"
-  value        = var.github_token
+  value        = nonsensitive(var.github_token)
   key_vault_id = azurerm_key_vault.main.id
   
   depends_on = [azurerm_key_vault_access_policy.current_user]
