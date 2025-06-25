@@ -1,44 +1,45 @@
-name: Terraform Azure Provision
+name: Deploy Terraform
 
 on:
-  push:
-    branches:
-      - main  # ou ta branche principale
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Nom de l’environnement (ex: dev, staging, prod)'
+        required: true
+        default: 'dev'
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  AZURE_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
-  terraform:
+  terraform_deploy:
     runs-on: ubuntu-latest
-
-    env:  # 🔐 Injection des secrets Azure (ARM + AZURE pour compatibilité backend)
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      AZURE_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    name: Terraform Deploy to Azure
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.6.0
 
-      - name: 🔍 Debug (temporaire - à supprimer ensuite)
+      - name: Terraform Init (backend config en ligne)
         run: |
-          echo "ARM_CLIENT_ID=$ARM_CLIENT_ID"
-          echo "AZURE_CLIENT_ID=$AZURE_CLIENT_ID"
-
-      - name: Terraform Init
-        run: terraform init -input=false -no-color -upgrade
+          terraform init
 
       - name: Terraform Plan
-        run: terraform plan -var-file="terraform.tfvars"
+        run: |
+          terraform plan -var="environment=${{ github.event.inputs.environment }}"
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+        run: |
+          terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
