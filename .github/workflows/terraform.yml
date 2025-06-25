@@ -40,12 +40,8 @@ jobs:
 
       - name: Terraform Init
         run: |
-          terraform init \
-            -backend-config="resource_group_name=rg-terraform-state" \
-            -backend-config="storage_account_name=stterraformstatedevops" \
-            -backend-config="container_name=tfstate" \
-            -backend-config="key=devops-cicd-${{ github.event.inputs.environment }}.tfstate"
-
+          terraform init 
+          
       - name: Terraform Validate
         run: terraform validate
 
