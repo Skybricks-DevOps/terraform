@@ -8,9 +8,9 @@ resource "random_password" "postgresql_admin_password" {
   numeric = true
 }
 
-# Détermination du mot de passe à utiliser
+# Détermination du mot de passe à utiliser - avec gestion explicite de sensitive
 locals {
-  postgresql_password = var.pg_password != "" ? var.pg_password : random_password.postgresql_admin_password[0].result
+  postgresql_password = nonsensitive(var.pg_password != "" ? var.pg_password : random_password.postgresql_admin_password[0].result)
 }
 
 # Serveur PostgreSQL Flexible

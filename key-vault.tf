@@ -58,7 +58,7 @@ resource "azurerm_key_vault_secret" "postgresql_password" {
 # Secret: Chaîne de connexion PostgreSQL complète
 resource "azurerm_key_vault_secret" "postgresql_connection_string" {
   name         = "postgresql-connection-string"
-  value        = "host=${azurerm_postgresql_flexible_server.main.fqdn} port=5432 dbname=${var.database_name} user=${var.db_admin_username} password=${local.postgresql_password} sslmode=require"
+  value        = nonsensitive("host=${azurerm_postgresql_flexible_server.main.fqdn} port=5432 dbname=${var.database_name} user=${var.db_admin_username} password=${local.postgresql_password} sslmode=require")
   key_vault_id = azurerm_key_vault.main.id
   
   depends_on = [azurerm_key_vault_access_policy.current_user]
