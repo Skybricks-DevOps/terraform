@@ -12,9 +12,7 @@ jobs:
   terraform_deploy:
     runs-on: ubuntu-latest
     name: Terraform Deploy to Azure
-    defaults:
-      run:
-        working-directory: terraform
+
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
