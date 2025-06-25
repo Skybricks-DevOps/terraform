@@ -13,10 +13,6 @@ env:
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-  AZURE_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
 jobs:
   terraform_deploy:
@@ -32,9 +28,14 @@ jobs:
         with:
           terraform_version: 1.6.0
 
-      - name: Terraform Init (backend config en ligne)
+      - name: Terraform Init
         run: |
-          terraform init
+          export ARM_CLIENT_ID=$ARM_CLIENT_ID
+          export ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET
+          export ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID
+          export ARM_TENANT_ID=$ARM_TENANT_ID
+    
+          terraform init 
 
       - name: Terraform Plan
         run: |
