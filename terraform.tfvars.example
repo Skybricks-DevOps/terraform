@@ -31,5 +31,17 @@ vnet_address_space           = ["10.0.0.0/16"]
 aks_subnet_address_prefixes  = ["10.0.1.0/24"]
 db_subnet_address_prefixes   = ["10.0.2.0/24"]
 
-# IMPORTANT: Ces valeurs sensibles doivent être définies comme secrets GitHub :
+# IMPORTANT: 
+# Ces valeurs sensibles ne doivent pas être stockées dans ce fichier en production.
+# Utilisez plutôt des variables d'environnement ou des secrets GitHub :
+# 
 # github_token = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#
+# Pour GitHub Actions, ajoutez ces secrets:
+# - ARM_CLIENT_ID
+# - ARM_CLIENT_SECRET
+# - ARM_SUBSCRIPTION_ID
+# - ARM_TENANT_ID
+# - GITHUB_USERNAME
+# - GITHUB_TOKEN
+# - AZURE_CREDENTIALS (JSON avec clientId, clientSecret, subscriptionId, tenantId)
