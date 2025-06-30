@@ -3,7 +3,7 @@
 
 # Configuration de base
 environment = "dev"
-location    = "northeurope"
+location    = "westus"
 owner       = "DevOps Team"
 github_repository = "DevOps-CI-CD"
 
