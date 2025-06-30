@@ -12,7 +12,7 @@ variable "environment" {
 variable "location" {
   description = "Région Azure pour déployer les ressources"
   type        = string
-  default     = "West Europe"
+  default     = "francecentral"
 }
 
 variable "owner" {
