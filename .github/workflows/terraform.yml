@@ -35,7 +35,12 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       
       - name: Terraform Init
-        run: terraform init 
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=rg-terraform-state" \
+            -backend-config="storage_account_name=stterraformstatebackend" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=devops-cicd.terraform.tfstate"
         
       - name: Terraform Import Resource Group
         run: terraform import azurerm_resource_group.terraform_state "/subscriptions/${{ env.ARM_SUBSCRIPTION_ID }}/resourceGroups/rg-terraform-state"
