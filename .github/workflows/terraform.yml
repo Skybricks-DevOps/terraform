@@ -38,7 +38,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="resource_group_name=rg-terraform-state" \
-            -backend-config="storage_account_name=stterraformstatebackend" \
+            -backend-config="storage_account_name=stterraformstatebackendf1763c7b" \
             -backend-config="container_name=tfstate" \
             -backend-config="key=devops-cicd.terraform.tfstate"
         
