@@ -16,7 +16,7 @@ resource "azurerm_resource_group" "terraform_state" {
 
 # Compte de stockage pour l'état Terraform
 resource "azurerm_storage_account" "terraform_state" {
-  name                     = "stterraformstatebackendf1763c7b"
+  name                     = "stterraformstatebackend"
   resource_group_name      = azurerm_resource_group.terraform_state.name
   location                 = azurerm_resource_group.terraform_state.location
   account_tier             = "Standard"
