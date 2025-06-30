@@ -14,26 +14,6 @@ resource "azurerm_resource_group" "terraform_state" {
   })
 }
 
-# Compte de stockage pour l'état Terraform
-resource "azurerm_storage_account" "terraform_state" {
-  name                     = "stterraformstatebackend"
-  resource_group_name      = azurerm_resource_group.terraform_state.name
-  location                 = azurerm_resource_group.terraform_state.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  
-  # Sécurité
-  allow_nested_items_to_be_public = false
-  min_tls_version                 = "TLS1_2"
-  
-  tags = merge(local.common_tags, {
-    Purpose = "Terraform State Storage"
-  })
-}
-
-# Container pour l'état Terraform
-resource "azurerm_storage_container" "terraform_state" {
-  name                  = "tfstate"
-  storage_account_name  = azurerm_storage_account.terraform_state.name
-  container_access_type = "private"
-}
+# Note: Le Storage Account et le Container pour le state Terraform
+# sont gérés par le script init-backend.sh et non par Terraform
+# pour éviter les problèmes de "chicken and egg" avec le backend.
