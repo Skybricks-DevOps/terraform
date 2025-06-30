@@ -38,6 +38,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform State Pull
+        run: terraform state pull > terraform.tfstate
+
       - name: Terraform Refresh
         run: terraform refresh
 
