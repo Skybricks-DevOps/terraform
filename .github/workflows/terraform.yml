@@ -38,6 +38,9 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Refresh
+        run: terraform refresh
+
       - name: Terraform Validate
         run: terraform validate
 
@@ -46,4 +49,3 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
-        
