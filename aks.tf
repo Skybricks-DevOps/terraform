@@ -12,9 +12,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   dns_prefix          = "${local.project_name}-${local.environment}"
-  
-  # Version Kubernetes
-  kubernetes_version = var.kubernetes_version
+
   
   # Configuration pour réduire les coûts
   sku_tier = "Free"
