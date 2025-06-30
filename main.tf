@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0"
+      version = "~> 3.70"
     }
     random = {
       source  = "hashicorp/random"
@@ -51,7 +51,7 @@ locals {
   # Noms standardisés des ressources
   resource_group_name     = "rg-${local.project_name}-${local.environment}"
   aks_cluster_name       = "aks-${local.project_name}-${local.environment}-${random_id.main.hex}"
-  key_vault_name         = "kv-${local.project_name}-${local.environment}-${random_id.main.hex}"
+  key_vault_name         = "kv-${replace(local.project_name, "-", "")}-${local.environment}-${random_id.main.hex}"
   postgresql_server_name = "psql-${local.project_name}-${local.environment}-${random_id.main.hex}"
   log_analytics_name     = "log-${local.project_name}-${local.environment}-${random_id.main.hex}"
 }
