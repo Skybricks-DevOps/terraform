@@ -1,0 +1,43 @@
+name: Destroy Terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Nom de l''environnement à détruire (ex: staging, prod)'
+        required: true
+        default: 'prod'
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_VAR_github_username: ${{ secrets.TF_VAR_GITHUB_USERNAME }}
+      TF_VAR_github_token: ${{ secrets.TF_VAR_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure CLI Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Import Resource Group
+        run: terraform import azurerm_resource_group.terraform_state "/subscriptions/${{ env.ARM_SUBSCRIPTION_ID }}/resourceGroups/rg-terraform-state"
+
+      - name: Terraform Refresh
+        run: terraform refresh
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve -var="environment=${{ github.event.inputs.environment }}"

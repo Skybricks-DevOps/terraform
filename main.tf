@@ -55,3 +55,5 @@ locals {
   postgresql_server_name = "psql-${local.project_name}-${local.environment}-${random_id.main.hex}"
   log_analytics_name     = "log-${local.project_name}-${local.environment}-${random_id.main.hex}"
 }
+
+// Pas de changement, la logique locale gère déjà l'environnement via var.environment
