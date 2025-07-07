@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Nom de l''environnement (ex: staging, prod)'
+        description: "Nom de l'environnement (ex: staging, prod)"
         required: true
-        default: 'prod'
-
+        default: "prod"
 
 jobs:
   destroy:
@@ -19,6 +18,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_VAR_github_username: ${{ secrets.TF_VAR_GITHUB_USERNAME }}
       TF_VAR_github_token: ${{ secrets.TF_VAR_GITHUB_TOKEN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,11 +31,16 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate"
+      - name: Terraform Init (backend distant)
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=stterraformstatebackend" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate" \
+            -backend-config="resource_group_name=rg-terraform-state"
 
-      - name: Terraform Refresh
-        run: terraform refresh
+      - name: Terraform Refresh (optionnel mais utile pour mise à jour du state)
+        run: terraform refresh -var="environment=${{ github.event.inputs.environment }}"
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -var="environment=${{ github.event.inputs.environment }}"
