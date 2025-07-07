@@ -1,12 +1,15 @@
 name: Destroy Terraform
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Nom de l''environnement à détruire (ex: staging, prod)'
+        description: 'Nom de l''environnement (ex: staging, prod)'
         required: true
         default: 'prod'
+
 
 jobs:
   destroy:
