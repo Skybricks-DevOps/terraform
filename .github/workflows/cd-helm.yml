@@ -1,0 +1,97 @@
+name: CD Helm Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement cible (staging ou prod)"
+        required: true
+        default: "prod"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_github_username: ${{ secrets.TF_VAR_GITHUB_USERNAME }}
+      TF_VAR_github_token: ${{ secrets.TF_VAR_GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set environment variable
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "ENVIRONMENT=staging" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          fi
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials --resource-group rg-${{ env.ENVIRONMENT }}-devops-cicd --name aks-${{ env.ENVIRONMENT }}-devops-cicd --overwrite-existing
+
+      - name: Azure Key Vault - Download secrets
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            az keyvault secret show --vault-name kv-${{ env.ENVIRONMENT }}-devops-cicd --name github-container-registry-token --query value -o tsv > .github_token
+            az keyvault secret show --vault-name kv-${{ env.ENVIRONMENT }}-devops-cicd --name postgresql-admin-password --query value -o tsv > .pg_password
+
+      - name: Helm Deploy
+        run: |
+          helm upgrade --install devops-cicd ./helm-chart \
+            --namespace devops-cicd \
+            --create-namespace \
+            --set image.tag=${{ github.sha }} \
+            --set secrets.github_token=$(cat .github_token) \
+            --set secrets.pg_password=$(cat .pg_password)
+
+      - name: Wait for deployment
+        run: kubectl rollout status deployment/frontend -n devops-cicd --timeout=120s
+
+      - name: Run Playwright E2E tests
+        uses: microsoft/playwright-github-action@v1
+        with:
+          run-tests: true
+        env:
+          BASE_URL: http://frontend-service.devops-cicd.svc.cluster.local:80
+
+      - name: Notify by email on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "CD Pipeline Failed"
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          from: "CD Pipeline <${{ secrets.SMTP_USERNAME }}>"
+          body: "Le pipeline CD Helm a échoué pour ${{ env.ENVIRONMENT }}. Voir logs GitHub Actions."
+
+      - name: Notify by email on success
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "CD Pipeline Success"
+          to: ${{ secrets.NOTIFY_EMAIL }}
+          from: "CD Pipeline <${{ secrets.SMTP_USERNAME }}>"
+          body: "Le pipeline CD Helm a réussi pour ${{ env.ENVIRONMENT }}. Voir logs GitHub Actions."
