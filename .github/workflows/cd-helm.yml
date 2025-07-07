@@ -42,6 +42,10 @@ jobs:
 
       - name: Get AKS credentials
         run: |
+          if ! az group show --name rg-${{ env.ENVIRONMENT }}-devops-cicd; then
+            echo "Resource group rg-${{ env.ENVIRONMENT }}-devops-cicd does not exist. Exiting."
+            exit 1
+          fi
           az aks get-credentials --resource-group rg-${{ env.ENVIRONMENT }}-devops-cicd --name aks-${{ env.ENVIRONMENT }}-devops-cicd --overwrite-existing
 
       - name: Azure Key Vault - Download secrets
