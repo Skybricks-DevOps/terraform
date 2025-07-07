@@ -1,8 +1,6 @@
 name: Destroy Terraform
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -34,7 +32,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate"
 
       - name: Terraform Import Resource Group
         run: terraform import azurerm_resource_group.terraform_state "/subscriptions/${{ env.ARM_SUBSCRIPTION_ID }}/resourceGroups/rg-terraform-state"

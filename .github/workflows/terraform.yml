@@ -1,8 +1,6 @@
 name: Deploy Terraform
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -11,11 +9,9 @@ on:
         default: 'prod'
 
 jobs:
-  terraform_staging:
-    if: github.event_name == 'push'
+  terraform_deploy:
     runs-on: ubuntu-latest
-    name: Terraform Deploy to Azure (staging)
-
+    name: Terraform Deploy to Azure
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -36,10 +32,10 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-      
+
       - name: Terraform Init
-        run: terraform init
-        
+        run: terraform init -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate"
+
       - name: Terraform Import Resource Group
         run: terraform import azurerm_resource_group.terraform_state "/subscriptions/${{ env.ARM_SUBSCRIPTION_ID }}/resourceGroups/rg-terraform-state"
 
@@ -49,7 +45,11 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
-      - name: Terraform Plan (staging)
+      - name: Terraform Plan
+        run: terraform plan -var="environment=${{ github.event.inputs.environment }}"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
         run: terraform plan -var="environment=staging"
 
       - name: Terraform Apply (staging)
