@@ -31,9 +31,6 @@ resource "random_id" "main" {
   byte_length = 4
 }
 
-# Obtenir les informations du client actuel
-data "azurerm_client_config" "current" {}
-
 # Variables locales pour standardiser les noms
 locals {
   project_name = "devops-cicd"
