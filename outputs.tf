@@ -100,13 +100,4 @@ output "aks_subnet_id" {
   value       = azurerm_subnet.aks.id
 }
 
-# Key Vault - Pour les secrets et certificats
-output "key_vault_name" {
-  description = "Nom du Key Vault"
-  value       = azurerm_key_vault.kv.name
-}
 
-output "key_vault_id" {
-  description = "ID du Key Vault"
-  value       = azurerm_key_vault.kv.id
-}
