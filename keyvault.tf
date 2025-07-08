@@ -42,13 +42,13 @@ resource "azurerm_key_vault" "kv" {
 # Add some example secrets
 resource "azurerm_key_vault_secret" "db_password" {
   name         = "db-password"
-  value        = azurerm_postgresql_server.postgresql.administrator_login_password
+  value        = azurerm_postgresql_flexible_server.main.administrator_password
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "azurerm_key_vault_secret" "db_username" {
   name         = "db-username"
-  value        = azurerm_postgresql_server.postgresql.administrator_login
+  value        = azurerm_postgresql_flexible_server.main.administrator_login
   key_vault_id = azurerm_key_vault.kv.id
 }
 
