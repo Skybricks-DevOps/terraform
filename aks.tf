@@ -61,10 +61,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   # Configuration RBAC et Azure AD
   role_based_access_control_enabled = true
   
-  # Key Vault secrets provider
-  key_vault_secrets_provider {
-    secret_rotation_enabled = true
-  }
+
   
   tags = local.common_tags
 }
