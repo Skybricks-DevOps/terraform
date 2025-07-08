@@ -1,4 +1,10 @@
 # Variables principales du projet
+variable "project_name" {
+  description = "Nom du projet pour le nommage des ressources"
+  type        = string
+  default     = "devopsiot"
+}
+
 variable "environment" {
   description = "Environnement de déploiement (dev, staging, prod)"
   type        = string

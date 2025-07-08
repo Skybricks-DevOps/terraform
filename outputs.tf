@@ -78,6 +78,11 @@ output "postgresql_admin_username" {
   value       = azurerm_postgresql_flexible_server.main.administrator_login
 }
 
+output "postgresql_admin_password" {
+  description = "Mot de passe admin PostgreSQL"
+  value       = local.postgresql_password
+  sensitive   = true
+}
 
 # Réseau - Pour la configuration des services
 output "vnet_name" {
@@ -95,13 +100,13 @@ output "aks_subnet_id" {
   value       = azurerm_subnet.aks.id
 }
 
-# GitHub Container Registry - Pour Helm image pull secrets
-output "github_container_registry" {
-  description = "URL du GitHub Container Registry"
-  value       = "ghcr.io"
+# Key Vault - Pour les secrets et certificats
+output "key_vault_name" {
+  description = "Nom du Key Vault"
+  value       = azurerm_key_vault.kv.name
 }
 
-output "github_username" {
-  description = "Nom d'utilisateur GitHub pour les images"
-  value       = var.github_username
+output "key_vault_id" {
+  description = "ID du Key Vault"
+  value       = azurerm_key_vault.kv.id
 }
