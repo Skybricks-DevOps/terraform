@@ -78,21 +78,6 @@ output "postgresql_admin_username" {
   value       = azurerm_postgresql_flexible_server.main.administrator_login
 }
 
-# Key Vault - Pour récupérer les secrets via Helm
-output "key_vault_name" {
-  description = "Nom du Key Vault"
-  value       = azurerm_key_vault.main.name
-}
-
-output "key_vault_uri" {
-  description = "URI du Key Vault"
-  value       = azurerm_key_vault.main.vault_uri
-}
-
-output "key_vault_id" {
-  description = "ID du Key Vault pour les références"
-  value       = azurerm_key_vault.main.id
-}
 
 # Réseau - Pour la configuration des services
 output "vnet_name" {
@@ -161,31 +146,4 @@ output "helm_values" {
     }
   }
   sensitive = false
-}
-
-# Instructions de déploiement pour Helm
-output "helm_deployment_instructions" {
-  description = "Instructions pour déployer avec Helm"
-  value = <<-EOT
-    # 1. Configuration kubectl
-    az aks get-credentials --resource-group ${azurerm_resource_group.main.name} --name ${azurerm_kubernetes_cluster.main.name}
-    
-    # 2. Vérification du cluster
-    kubectl get nodes
-    
-    # 3. Installation/mise à jour du chart Helm
-    helm upgrade --install devops-cicd ./helm-chart \
-      --namespace devops-cicd \
-      --create-namespace \
-      --set database.host=${azurerm_postgresql_flexible_server.main.fqdn} \
-      --set database.name=${azurerm_postgresql_flexible_server_database.main.name} \
-      --set database.username=${azurerm_postgresql_flexible_server.main.administrator_login} \
-      --set images.repository=ghcr.io/${var.github_username} \
-      --set images.tag=${var.image_tag} \
-      --set keyVault.name=${azurerm_key_vault.main.name}
-    
-    # 4. Vérification du déploiement
-    kubectl get pods -n devops-cicd
-    kubectl get services -n devops-cicd
-  EOT
 }
