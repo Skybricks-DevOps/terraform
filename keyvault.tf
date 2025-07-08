@@ -2,8 +2,8 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "kv" {
   name                = "${var.project_name}-kv"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   tenant_id          = data.azurerm_client_config.current.tenant_id
   sku_name           = "standard"
 
@@ -26,7 +26,7 @@ resource "azurerm_key_vault" "kv" {
   # Add access policy for AKS
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+    object_id = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 
     secret_permissions = [
       "Get",
@@ -51,3 +51,4 @@ resource "azurerm_key_vault_secret" "db_username" {
   value        = azurerm_postgresql_server.postgresql.administrator_login
   key_vault_id = azurerm_key_vault.kv.id
 }
+
