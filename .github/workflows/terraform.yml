@@ -6,7 +6,7 @@ on:
       environment:
         description: 'Nom de l''environnement (ex: staging, prod)'
         required: true
-        default: 'staging'
+        default: 'staging' #ou bien dev
 
 jobs:
   terraform_deploy:
