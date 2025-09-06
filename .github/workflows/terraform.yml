@@ -42,10 +42,6 @@ jobs:
           echo "::add-mask::$ACCOUNT_KEY"
           echo "ACCOUNT_KEY=$ACCOUNT_KEY" >> $GITHUB_ENV
 
-      - name: Select/Create Terraform Workspace
-        run: |
-          terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
-
       - name: Terraform Init
         run: |
           terraform init \
@@ -54,6 +50,10 @@ jobs:
             -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate" \
             -backend-config="access_key=${{ env.ACCOUNT_KEY }}" \
             -backend-config="resource_group_name=${{ env.RESOURCE_GROUP_NAME }}"
+
+      - name: Select/Create Terraform Workspace
+        run: |
+          terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
 
       - name: Terraform Validate
         run: terraform validate
