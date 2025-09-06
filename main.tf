@@ -30,7 +30,7 @@ resource "random_id" "main" {
 
 # Variables locales pour standardiser les noms
 locals {
-  project_name = "devops-cicd"
+  project_name = var.project_name
   environment  = var.environment
   
   # Tags communs à appliquer sur toutes les ressources
@@ -44,7 +44,7 @@ locals {
 
   # Noms standardisés des ressources
   resource_group_name     = "rg-${local.project_name}-${local.environment}"
-  aks_cluster_name       = "aks-${local.project_name}-${local.environment}"
-  postgresql_server_name = "psql-${local.project_name}-${local.environment}"
-  log_analytics_name     = "log-${local.project_name}-${local.environment}"
+  aks_cluster_name        = "aks-${local.project_name}-${local.environment}"
+  postgresql_server_name  = "psql-${local.project_name}-${local.environment}"
+  log_analytics_name      = "log-${local.project_name}-${local.environment}"
 }

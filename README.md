@@ -95,6 +95,25 @@ Pour supprimer le stockage d'état Azure :
 
 ---
 
+## Déploiement multi-environnement
+
+Pour déployer sur un environnement spécifique (ex: staging, prod), utilisez l'une des méthodes suivantes :
+
+**Méthode 1 : Variable d'environnement**
+```bash
+terraform apply -var="environment=staging"
+```
+
+**Méthode 2 : Workspace Terraform**
+```bash
+terraform workspace new staging   # (à faire une seule fois)
+terraform workspace select staging
+terraform apply -var="environment=staging"
+```
+Les noms des ressources seront automatiquement adaptés (ex: `aks-devops-cicd-staging`).
+
+---
+
 ## Livrables
 
 - Code Terraform versionné dans le repo

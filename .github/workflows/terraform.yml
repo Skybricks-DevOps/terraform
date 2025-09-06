@@ -42,6 +42,10 @@ jobs:
           echo "::add-mask::$ACCOUNT_KEY"
           echo "ACCOUNT_KEY=$ACCOUNT_KEY" >> $GITHUB_ENV
 
+      - name: Select/Create Terraform Workspace
+        run: |
+          terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
+
       - name: Terraform Init
         run: |
           terraform init \
@@ -56,6 +60,7 @@ jobs:
 
       - name: Terraform Plan
         run: terraform plan -var="environment=${{ github.event.inputs.environment }}"
-
       - name: Terraform Apply
         run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
+
+# Note: The resource names and backend state file will match the selected environment (dev, staging, prod).

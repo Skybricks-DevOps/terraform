@@ -127,3 +127,8 @@ variable "db_subnet_address_prefixes" {
   type        = list(string)
   default     = ["10.0.2.0/24"]
 }
+
+# Pour changer d'environnement, utilisez :
+#   terraform workspace select staging
+# ou bien
+#   terraform apply -var="environment=staging"

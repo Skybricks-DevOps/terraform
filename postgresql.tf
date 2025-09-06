@@ -63,3 +63,18 @@ resource "azurerm_postgresql_flexible_server_configuration" "log_statement" {
   server_id = azurerm_postgresql_flexible_server.main.id
   value     = "all"
 }
+
+resource "azurerm_monitor_diagnostic_setting" "postgresql" {
+  name               = "psql-monitoring"
+  target_resource_id = azurerm_postgresql_flexible_server.main.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+
+  enabled_log {
+    category = "PostgreSQLLogs"
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = true
+  }
+}
