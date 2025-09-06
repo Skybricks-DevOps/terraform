@@ -73,4 +73,14 @@ jobs:
           name: tf-outputs
           path: tf_outputs.json
 
+      - name: Trigger Helm Deploy Workflow
+        uses: peter-evans/workflow-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          workflow: helm-deploy.yml
+          ref: main
+          inputs: |
+            environment=${{ github.event.inputs.environment }}
+
 # Note: The resource names and backend state file will match the selected environment (dev, staging, prod).
