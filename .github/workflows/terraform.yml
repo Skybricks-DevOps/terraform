@@ -77,10 +77,6 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: helm-deploy.yml
-          inputs: '{ "environment": "${{ github.event.inputs.environment}" }'
-
-# Note: The resource names and backend state file will match the selected environment (dev, staging, prod).
-          inputs:
-            environment: ${{ github.event.inputs.environment }}
+          inputs: '{ "environment": "${{ github.event.inputs.environment }}" }'
 
 # Note: The resource names and backend state file will match the selected environment (dev, staging, prod).
