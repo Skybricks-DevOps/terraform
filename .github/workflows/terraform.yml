@@ -64,4 +64,13 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
 
+      - name: Save Terraform Outputs
+        run: terraform output -json > tf_outputs.json
+
+      - name: Upload Terraform Outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: tf-outputs
+          path: tf_outputs.json
+
 # Note: The resource names and backend state file will match the selected environment (dev, staging, prod).
