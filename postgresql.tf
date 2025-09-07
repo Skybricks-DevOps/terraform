@@ -19,8 +19,6 @@ resource "azurerm_postgresql_flexible_server" "main" {
   resource_group_name    = azurerm_resource_group.main.name
   location               = azurerm_resource_group.main.location
   version                = var.postgresql_version
-  
-  # Configuration réseau - intégration avec VNet
   delegated_subnet_id    = azurerm_subnet.database.id
   private_dns_zone_id    = azurerm_private_dns_zone.postgresql.id
   
