@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Nom de l'environnement (ex: staging, prod)"
+        description: 'Nom de l''environnement (ex: staging, prod)'
         required: true
-        default: "staging" # ou bien dev
+        default: 'staging' #ou bien dev
 
 jobs:
   terraform_deploy:
@@ -38,14 +38,12 @@ jobs:
 
       - name: Get Storage Account Key
         run: |
-          set -euo pipefail
-          ACCOUNT_KEY=$(az storage account keys list --resource-group "${{ env.RESOURCE_GROUP_NAME }}" --account-name "${{ env.STORAGE_ACCOUNT_NAME }}" --query '[0].value' -o tsv)
+          ACCOUNT_KEY=$(az storage account keys list --resource-group ${{ env.RESOURCE_GROUP_NAME }} --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --query '[0].value' -o tsv)
           echo "::add-mask::$ACCOUNT_KEY"
           echo "ACCOUNT_KEY=$ACCOUNT_KEY" >> $GITHUB_ENV
 
       - name: Terraform Init
         run: |
-          set -euo pipefail
           terraform init \
             -input=false \
             -backend-config="storage_account_name=${{ env.STORAGE_ACCOUNT_NAME }}" \
@@ -56,58 +54,30 @@ jobs:
 
       - name: Select/Create Terraform Workspace
         run: |
-          set -euo pipefail
-          terraform workspace new "${{ github.event.inputs.environment }}" || terraform workspace select "${{ github.event.inputs.environment }}"
-
-      # NEW: Import conditionnel du Diagnostic Setting existant (idempotent)
-      - name: Ensure Diagnostic Setting tracked in state (import if needed)
-        shell: bash
-        run: |
-          set -euo pipefail
-          ENV="${{ github.event.inputs.environment }}"
-          RG="rg-devopsskybrix-${ENV}"
-          SERVER="psql-devopsskybrix-${ENV}"
-
-          # Récupère l'ID du serveur PostgreSQL Flexible
-          SERVER_ID="$(az postgres flexible-server show --resource-group "$RG" --name "$SERVER" --query id -o tsv)"
-          echo "Server ID: $SERVER_ID"
-
-          # Si déjà présent dans le state Terraform, ne rien faire
-          if terraform state show azurerm_monitor_diagnostic_setting.postgresql > /dev/null 2>&1; then
-            echo "Diagnostic setting déjà présent dans le state Terraform."
-            exit 0
-          fi
-
-          # Vérifie s'il existe côté Azure (même nom que dans ton HCL)
-          if az monitor diagnostic-settings show --resource "$SERVER_ID" --name "psql-monitoring" > /dev/null 2>&1; then
-            echo "Diagnostic setting 'psql-monitoring' existe dans Azure → import dans le state…"
-            terraform import azurerm_monitor_diagnostic_setting.postgresql "${SERVER_ID}|psql-monitoring"
-          else
-            echo "Aucun diagnostic setting 'psql-monitoring' existant dans Azure → Terraform le créera."
-          fi
+          terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
 
       - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan -var="environment=${{ github.event.inputs.environment }}"
-
       - name: Terraform Apply
         run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
 
-      - name: Save Terraform Outputs
-        run: terraform output -json > tf_outputs.json
+      #- name: Save Terraform Outputs
+       # run: terraform output -json > tf_outputs.json
 
       #- name: Upload Terraform Outputs
        # uses: actions/upload-artifact@v4
         #with:
-         
          # name: tf-outputs
           #path: tf_outputs.json
 
-      # - name: Trigger Helm Deploy Workflow
-      #   uses: benc-uk/workflow-dispatch@v1
-      #   with:
-      #     workflow: helm-deploy.yml
-      #     repo: Skybricks-DevOps/deployment
-      #     inputs: '{ "environment": "${{ github.event.inputs.environment }}" }'
+      #- name: Trigger Helm Deploy Workflow
+       # uses: benc-uk/workflow-dispatch@v1
+        #with:
+         # workflow: helm-deploy.yml
+          #repo: Skybricks-DevOps/deployment
+          #inputs: '{ "environment": "${{ github.event.inputs.environment }}" }'
+
+# Note: The resource names and backend state file will match the selected environment (dev, staging, prod).
