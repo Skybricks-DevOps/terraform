@@ -68,7 +68,7 @@ resource "azurerm_monitor_metric_alert" "aks_cpu" {
 
   criteria {
     metric_namespace = "Microsoft.ContainerService/ManagedClusters"
-    metric_name      = "CPUUsage"
+    metric_name      = "Percentage CPU"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = 80
