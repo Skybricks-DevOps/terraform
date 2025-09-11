@@ -34,6 +34,7 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
 
 # Helm release Grafana sur AKS
 resource "helm_release" "grafana" {
+  depends_on = [azurerm_kubernetes_cluster.main]
   name       = "grafana"
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
@@ -67,8 +68,8 @@ resource "azurerm_monitor_metric_alert" "aks_cpu" {
   window_size         = "PT5M"
 
   criteria {
-    metric_namespace = "Microsoft.ContainerService/ManagedClusters"
-    metric_name      = "CPU Usage Percentage"
+    metric_namespace = "Microsoft.ContainerService/managedClusters"
+    metric_name      = "node_cpu_usage_percentage"
     aggregation      = "Average"
     operator         = "GreaterThan"
     threshold        = 80
