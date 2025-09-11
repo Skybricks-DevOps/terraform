@@ -60,9 +60,9 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -var="environment=${{ github.event.inputs.environment }}"
+        run: terraform plan -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}"
       - name: Terraform Apply
-        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
+        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}"
 
       - name: Ensure Diagnostic Setting tracked in state (import if needed)
         shell: bash

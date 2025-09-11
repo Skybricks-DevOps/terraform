@@ -128,6 +128,11 @@ variable "db_subnet_address_prefixes" {
   default     = ["10.0.2.0/24"]
 }
 
+
+variable "alert_email" {
+  description = "Adresse email pour recevoir les alertes Azure Monitor"
+  type        = string
+}
 # Pour changer d'environnement, utilisez :
 #   terraform workspace select staging
 # ou bien
