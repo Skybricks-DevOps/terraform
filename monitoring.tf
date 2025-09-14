@@ -5,6 +5,15 @@ resource "azurerm_monitor_workspace" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
+data "azurerm_monitor_workspace" "main" {
+  name                = "monitor-workspace-${var.environment}"
+  resource_group_name = azurerm_resource_group.main.name
+}
+
+output "prometheus_endpoint" {
+  value = azurerm_monitor_workspace.main.prometheus_endpoint
+}
+
 # Diagnostic settings pour AKS (logs/métriques vers Log Analytics)
 resource "azurerm_monitor_diagnostic_setting" "aks" {
   name               = "aks-monitoring"
@@ -41,7 +50,17 @@ resource "helm_release" "grafana" {
   namespace  = "monitoring"
   create_namespace = true
   values = [
-    # Tu peux ajouter ici la config adminPassword, service type, etc.
+    <<EOF
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            url: "${azurerm_monitor_workspace.main.prometheus_endpoint}"
+            access: proxy
+            isDefault: true
+    EOF
   ]
 }
 

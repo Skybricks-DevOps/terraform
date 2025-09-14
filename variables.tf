@@ -128,9 +128,13 @@ variable "db_subnet_address_prefixes" {
   default     = ["10.0.2.0/24"]
 }
 
-
 variable "alert_email" {
   description = "Adresse email pour recevoir les alertes Azure Monitor"
+  type        = string
+}
+
+variable "alert_email_aks" {
+  description = "Adresse email pour recevoir les alertes AKS"
   type        = string
 }
 # Pour changer d'environnement, utilisez :
