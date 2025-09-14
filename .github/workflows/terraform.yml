@@ -99,6 +99,9 @@ jobs:
             fi
           fi
 
+      - name: Force unlock Terraform state (if needed)
+        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
+
       #- name: Save Terraform Outputs
        # run: terraform output -json > tf_outputs.json
 
