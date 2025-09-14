@@ -33,9 +33,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Force unlock Terraform state (if needed)
-        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -54,6 +51,9 @@ jobs:
             -backend-config="key=devops-cicd.${{ github.event.inputs.environment }}.tfstate" \
             -backend-config="access_key=${{ env.ACCOUNT_KEY }}" \
             -backend-config="resource_group_name=${{ env.RESOURCE_GROUP_NAME }}"
+
+      - name: Force unlock Terraform state (if needed)
+        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
 
       - name: Select/Create Terraform Workspace
         run: |
