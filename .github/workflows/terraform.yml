@@ -56,17 +56,6 @@ jobs:
         run: |
           terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
 
-      - name: Force unlock Terraform state (if needed)
-        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}" -var="alert_email_aks=${{ secrets.ALERT_EMAIL }}" -var="prometheus_url=${{ secrets.PROMETHEUS_ENDPOINT }}"
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}" -var="alert_email_aks=${{ secrets.ALERT_EMAIL }}" -var="prometheus_url=${{ secrets.PROMETHEUS_ENDPOINT }}"
-
       - name: Ensure Diagnostic Setting tracked in state (import if needed)
         shell: bash
         run: |
@@ -101,6 +90,17 @@ jobs:
               echo "Aucun diagnostic setting 'psql-monitoring' existant dans Azure → Terraform le créera."
             fi
           fi
+
+      - name: Force unlock Terraform state (if needed)
+        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}" -var="alert_email_aks=${{ secrets.ALERT_EMAIL }}" -var="prometheus_url=${{ secrets.PROMETHEUS_ENDPOINT }}"
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}" -var="alert_email=${{ secrets.ALERT_EMAIL }}" -var="alert_email_aks=${{ secrets.ALERT_EMAIL }}" -var="prometheus_url=${{ secrets.PROMETHEUS_ENDPOINT }}"
 
       #- name: Save Terraform Outputs
        # run: terraform output -json > tf_outputs.json
