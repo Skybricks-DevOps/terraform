@@ -137,6 +137,12 @@ variable "alert_email_aks" {
   description = "Adresse email pour recevoir les alertes AKS"
   type        = string
 }
+
+variable "prometheus_url" {
+  description = "Endpoint Prometheus pour Grafana"
+  type        = string
+  default     = ""
+}
 # Pour changer d'environnement, utilisez :
 #   terraform workspace select staging
 # ou bien

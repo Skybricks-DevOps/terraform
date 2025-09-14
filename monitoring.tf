@@ -10,10 +10,6 @@ data "azurerm_monitor_workspace" "main" {
   resource_group_name = azurerm_resource_group.main.name
 }
 
-output "prometheus_endpoint" {
-  value = azurerm_monitor_workspace.main.prometheus_endpoint
-}
-
 # Diagnostic settings pour AKS (logs/métriques vers Log Analytics)
 resource "azurerm_monitor_diagnostic_setting" "aks" {
   name               = "aks-monitoring"
@@ -57,7 +53,7 @@ resource "helm_release" "grafana" {
         datasources:
           - name: Prometheus
             type: prometheus
-            url: "${azurerm_monitor_workspace.main.prometheus_endpoint}"
+            url: "${var.prometheus_url}"
             access: proxy
             isDefault: true
     EOF
@@ -94,6 +90,10 @@ resource "azurerm_monitor_metric_alert" "aks_cpu" {
     threshold        = 80
   }
 
+  action {
+    action_group_id = azurerm_monitor_action_group.main.id
+  }
+}
   action {
     action_group_id = azurerm_monitor_action_group.main.id
   }
