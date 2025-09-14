@@ -94,7 +94,4 @@ resource "azurerm_monitor_metric_alert" "aks_cpu" {
     action_group_id = azurerm_monitor_action_group.main.id
   }
 }
-  action {
-    action_group_id = azurerm_monitor_action_group.main.id
-  }
-}
+
