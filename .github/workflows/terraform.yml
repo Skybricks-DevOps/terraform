@@ -52,12 +52,12 @@ jobs:
             -backend-config="access_key=${{ env.ACCOUNT_KEY }}" \
             -backend-config="resource_group_name=${{ env.RESOURCE_GROUP_NAME }}"
 
-      - name: Force unlock Terraform state (if needed)
-        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
-
       - name: Select/Create Terraform Workspace
         run: |
           terraform workspace new ${{ github.event.inputs.environment }} || terraform workspace select ${{ github.event.inputs.environment }}
+
+      - name: Force unlock Terraform state (if needed)
+        run: terraform force-unlock -force 2808e608-159f-93f9-ff5f-e503f1ef389a || true
 
       - name: Terraform Validate
         run: terraform validate
